@@ -12,42 +12,62 @@ class Map(object):
 
 class MapBuilder(object):
     """
-    Builds boxes based off of a text representation of said box.  This does not draw anything, just creates
-    a simple interface for converting the text to coordinates that hold the correct characters for
-    displaying the box.
+    Builds maps based off of a text representation of said map.  This does not draw anything, just creates
+    a simple interface for converting the text to coordinates that hold the correct objects for displaying
+    the map.
     """
 
-    def build(self, map_text, game_map, map_objects):
-        self.place_tokens(map_text, game_map)
-        self.place_objects(game_map, map_objects)
-
-    def place_objects(self, game_map, map_objects):
+    @staticmethod
+    def build(map_text, game_map, map_objects):
         """
-        Place the map objects onto the game map based on the game map tokens.
+        Populate the game_map with the given map_objects, based on the map_text.
+
+        :param map_text:
+        :param game_map:
+        :param map_objects:
+        :return game_map:
+        """
+
+        MapBuilder.place_tokens(map_text, game_map)
+        MapBuilder.place_objects(game_map, map_objects)
+
+        return game_map
+
+    @staticmethod
+    def place_objects(game_map, map_objects):
+        """
+        Place the map_objects onto the game_map.
 
         :return:
         """
 
-        # Get a list of game_object_token
+        # Get a list of map_object_tokens
         map_object_tokens = []
         map_objects_list = list(map_objects.values())
         if map_objects is not None:
             map_object_tokens = [map_object.token for map_object in map_objects.values()]
 
-        # Go through game map tokens and place the objects into the game map.
-        for (y, x), char in game_map.tokens.items():
-            if char in map_object_tokens:
-                map_object = map_objects_list[map_object_tokens.index(char)]
+        # Go through game map tokens and place the corresponding objects into the game map.
+        for (y, x), token in game_map.tokens.items():
+            # If the token on the game map corresponds to an object token, place the
+            # object on the map instead of the token.
+            if token in map_object_tokens:
+                map_object = map_objects_list[map_object_tokens.index(token)]
                 obj = map_object(y, x)
                 obj.place(game_map)
                 continue
 
-            game_map.objects[y, x] = char
+            # Place the token on the map since there was no
+            # game object with a corresponding token.
+            game_map.objects[y, x] = token
             continue
 
-    def place_tokens(self, map_text, game_map):
+        return
+
+    @staticmethod
+    def place_tokens(map_text, game_map):
         """
-        Place map tokens onto the game map.  Tokens denote map objects whether
+        Place map tokens onto the game_map based on the map_text.  Tokens represent map objects whether
         they are walls, floors, doors, etc.
 
         :return:
@@ -62,6 +82,8 @@ class MapBuilder(object):
                 game_map.tokens[row_number, character_number] = character
                 character_number += 1
             row_number += 1
+
+        return
 
 
 if __name__ == '__main__':
@@ -160,8 +182,9 @@ if __name__ == '__main__':
                 'food': Food,
                 'water': Water
             }
-            map_builder = MapBuilder()
-            map_builder.build(map_text, game_map, map_objects)
+
+            #
+            MapBuilder.build(map_text, game_map, map_objects)
 
             for (y, x), obj in game_map.objects.items():
                 try:
