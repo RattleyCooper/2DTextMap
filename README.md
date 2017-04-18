@@ -32,6 +32,9 @@ Each `token` is converted to the character that will be displayed on the map.  S
     │                                         │             │
     └─────────────────────────────────────────┴─────────────┘
 
+(github doesn't format it exactly correct.  The lines are broken and 
+nothing is colored.)
+
 There are 2 objects for the mapping, `MapBuilder` & `Map`.
 And some example objects that inherit from `MapObject`: `Ground`, `Wall` & `Door`.
 
