@@ -1,6 +1,6 @@
 import curses
 from editor import Map, MapBuilder
-from map_objects import Wall, VerticalDoor, HorizontalDoor, Floor, Treasure, Food, Water
+from map_objects import Wall, VerticalDoor, HorizontalDoor, Ground, Treasure, Food, Water
 from time import sleep
 
 
@@ -90,7 +90,7 @@ def main(stdscr):
             'vdoor': VerticalDoor,
             'hdoor': HorizontalDoor,
             'wall': Wall,
-            'floor': Floor,
+            'floor': Ground,
             'treasure': Treasure,
             'food': Food,
             'water': Water

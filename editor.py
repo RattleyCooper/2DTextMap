@@ -10,10 +10,9 @@ class Map(object):
             stdscr.addstr(y, x, map_object.display, curses.color_pair(map_object.color))
 
         # Move an object.
-        obj = self.objects[10, 10]
-        obj.y, obj.x = 5, 5
-        self.objects[obj.y, obj.x] = obj
-        del self.objects[10, 10]
+        if isinstance(self.objects[y, x], Treasure):
+            # do something
+            pass
     """
     def __init__(self):
         # Container to hold coordinates.
@@ -106,7 +105,7 @@ class MapBuilder(object):
 
 if __name__ == '__main__':
     import curses
-    from map_objects import Wall, VerticalDoor, HorizontalDoor, Floor, Treasure, Food, Water
+    from map_objects import Wall, VerticalDoor, HorizontalDoor, Ground, Treasure, Food, Water
     from time import sleep
 
     def main(stdscr):
@@ -186,24 +185,23 @@ if __name__ == '__main__':
         curses.curs_set(0)
         animation_speed = 0.00025
 
-        # Build each box and present it onto the screen in an animated fashion.
+        # Build each map and present it onto the screen in an animated fashion.
         for map_text in maps:
-            # Build the box(converts tokens to wall pieces).
-
+            # Instantiate the Map object and assemble dict of MapObjects.
             game_map = Map()
             map_objects = {
                 'vdoor': VerticalDoor,
                 'hdoor': HorizontalDoor,
                 'wall': Wall,
-                'floor': Floor,
+                'ground': Ground,
                 'treasure': Treasure,
                 'food': Food,
                 'water': Water
             }
 
+            # Populate the Map object with MapObjects.
             MapBuilder.build(map_text, game_map, map_objects)
-            if isinstance(game_map.objects[1, 1], Treasure):
-                game_map.objects[1, 1].move(2, 2, game_map)
+            # Draw the map!
             for (y, x), obj in game_map.objects.items():
                 try:
                     stdscr.addch(y, x, obj.ch_number, curses.color_pair(obj.color))

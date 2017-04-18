@@ -4,7 +4,7 @@ class EmptyTile(object):
     """
     The EmptyTile tile is the tile that all other MapObjects inherit from.
 
-    EmptyTile->Floor->MapObject
+    EmptyTile->Ground->MapObject
     """
     token = str
     drawing = ''
@@ -18,21 +18,21 @@ class EmptyTile(object):
         game_map.objects[self.y, self.x] = self
 
 
-class Floor(EmptyTile):
+class Ground(EmptyTile):
     """
-    The Floor tile is the base of the map that all other objects exist upon.
+    The Ground tile is the base of the map that all other objects exist upon.
     """
     token = ' '
     drawing = ' '
     color = 0
     ch_number = 32
 
-    def move(self, x, y, game_map, replacement=EmptyTile):
+    def move(self, y, x, game_map, replacement=EmptyTile):
         """
-        Moving the floor will replace the floor tile with a EmptyTile tile.
+        Moving a Ground will replace the Ground with an EmptyTile.
 
-        :param x:
         :param y:
+        :param x:
         :param game_map:
         :param replacement:
         :return:
@@ -44,28 +44,29 @@ class Floor(EmptyTile):
         game_map.objects[y, x] = self
 
 
-class MapObject(Floor):
+class MapObject(Ground):
     """
-    MapObjects are physical objects that exist on top of the Floor.  Example, the Void and EmptyTile objects
-    are not MapObjects, but Wall, Treasure and Food are.
+    MapObjects are physical objects that exist on top of the Ground.  Example, the Ground and EmptyTile objects
+    are not MapObjects, but Wall, Treasure and Food are.  Moving a MapObject leaves a Ground object in its
+    place.
     """
     token = str
     drawing = ''
     color = 0
     ch_number = 0
 
-    def move(self, x, y, game_map, replacement=Floor):
+    def move(self, y, x, game_map, replacement=Ground):
         """
-        Moving a MapObject will replace it with a Floor object.
+        Moving a MapObject will replace it with a Ground object.
 
-        :param x:
         :param y:
+        :param x:
         :param game_map:
         :param replacement:
         :return:
         """
 
-        Floor.move(self, x, y, game_map, replacement=replacement)
+        Ground.move(self, y, x, game_map, replacement=replacement)
 
 
 class Treasure(MapObject):
@@ -88,7 +89,7 @@ class Wall(MapObject):
     drawing = None
     ch_number = None
 
-    def check_wall_borders(self, x, y, game_map):
+    def check_wall_borders(self, y, x, game_map):
         """
         Check the borders of the given coordinates.
 
@@ -98,7 +99,7 @@ class Wall(MapObject):
         :return dict borders:
         """
 
-        target_coordinates = self.get_target_coordinates(x, y)
+        target_coordinates = self.get_target_coordinates(y, x)
         north_piece, south_piece, east_piece, west_piece = False, False, False, False
         for direction, target_coordinate in target_coordinates.items():
             try:
@@ -123,7 +124,7 @@ class Wall(MapObject):
         }
         return borders
 
-    def get_target_coordinates(self, x, y):
+    def get_target_coordinates(self, y, x):
         """
         Get the x/y coordinates of possible target locations directly surrounding the given x and y
         as a dict.  The keys for the returned dict will be 'n', 's', 'e', 'w', 'nw', 'ne', 'sw' &
@@ -170,9 +171,9 @@ class Wall(MapObject):
         :return:
         """
 
-        x, y = self.x, self.y
+        y, x = self.y, self.x
 
-        borders = self.check_wall_borders(x, y, game_map)
+        borders = self.check_wall_borders(y, x, game_map)
         n_piece = borders['n']
         s_piece = borders['s']
         e_piece = borders['e']
