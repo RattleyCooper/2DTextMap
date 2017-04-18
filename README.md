@@ -16,6 +16,26 @@ Level's are built with text.  A `token` is a character like `#` that represents 
 
 Each `token` is converted to the character that will be displayed on the map.  Since this is a wall, the `Wall` object will figure out how to display itself based on its neighbors(and ends up looking like lines ─┘).
 
+Here is a more complex example:
+
+    #########################################################
+    #$         #f                             #             #
+    #          #                              |             #
+    #          #                              |             #
+    #####--#####                              #             #
+    #                                         #             #
+    |                 ###########             #             #
+    |                 #wwwwwwwww#             ###############
+    |                 #wwwwwwwww#             #            $#
+    #                 #wwwwwwwww#             #             #
+    #                 ###########             #             #
+    #                                         |             #
+    #                                         |             #
+    #                                         #             #
+    #########################################################
+
+Turns into something like:
+
     ┌──────────┬──────────────────────────────┬─────────────┐
     │$         │                             │             │
     │          │                              ▒             │
