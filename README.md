@@ -16,6 +16,22 @@ Level's are built with text.  A `token` is a character like `#` that represents 
 
 Each `token` is converted to the character that will be displayed on the map.  Since this is a wall, the `Wall` object will figure out how to display itself based on its neighbors(and ends up looking like lines ─┘).
 
+    ┌──────────┬──────────────────────────────┬─────────────┐
+    │$         │                             │             │
+    │          │                              ▒             │
+    │          │                              ▒             │
+    ├────▒▒────┘                              │             │
+    │                                         │             │
+    ▒                 ┌─────────┐             │             │
+    ▒                 │▒▒▒▒▒▒▒▒▒│             ├─────────────┤
+    ▒                 │▒▒▒▒▒▒▒▒▒│             │            $│
+    │                 │▒▒▒▒▒▒▒▒▒│             │             │
+    │                 └─────────┘             │             │
+    │                                         ▒             │
+    │                                         ▒             │
+    │                                         │             │
+    └─────────────────────────────────────────┴─────────────┘
+
 There are 2 objects for the mapping, `MapBuilder` & `Map`.
 And some example objects that inherit from `MapObject`: `Ground`, `Wall` & `Door`.
 
