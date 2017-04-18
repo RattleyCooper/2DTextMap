@@ -1,4 +1,4 @@
-##2DTextMap
+## 2DTextMap
 
 So back in high school we made games with QBasic and I wanted to see if I could make a game based on ASCII/unicode characters in python instead.  As part of that, I want to be able to create maps that the player can move around on without having to hard-code the x/y coordinate for every map object.
 
