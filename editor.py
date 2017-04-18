@@ -16,19 +16,12 @@ class MapBuilder(object):
     a simple interface for converting the text to coordinates that hold the correct characters for
     displaying the box.
     """
-    def __init__(self, map_text, game_map, map_objects=None):
-        # Parse the input
-        self.map_text = map_text
-        self.rows = [[char for char in line] for line in map_text.split('\n') if line != '']
 
-        self.game_map = game_map
-        self.map_objects = map_objects
+    def build(self, map_text, game_map, map_objects):
+        self.place_tokens(map_text, game_map)
+        self.place_objects(game_map, map_objects)
 
-        # Run methods to build up the Map object.
-        self.place_tokens()
-        self.place_objects()
-
-    def place_objects(self):
+    def place_objects(self, game_map, map_objects):
         """
         Place the map objects onto the game map based on the game map tokens.
 
@@ -37,22 +30,22 @@ class MapBuilder(object):
 
         # Get a list of game_object_token
         map_object_tokens = []
-        map_objects_list = list(self.map_objects.values())
-        if self.map_objects is not None:
-            map_object_tokens = [map_object.token for map_object in self.map_objects.values()]
+        map_objects_list = list(map_objects.values())
+        if map_objects is not None:
+            map_object_tokens = [map_object.token for map_object in map_objects.values()]
 
         # Go through game map tokens and place the objects into the game map.
-        for (y, x), char in self.game_map.tokens.items():
+        for (y, x), char in game_map.tokens.items():
             if char in map_object_tokens:
                 map_object = map_objects_list[map_object_tokens.index(char)]
                 obj = map_object(y, x)
-                obj.place(self.game_map)
+                obj.place(game_map)
                 continue
 
-            self.game_map.objects[y, x] = char
+            game_map.objects[y, x] = char
             continue
 
-    def place_tokens(self):
+    def place_tokens(self, map_text, game_map):
         """
         Place map tokens onto the game map.  Tokens denote map objects whether
         they are walls, floors, doors, etc.
@@ -60,11 +53,13 @@ class MapBuilder(object):
         :return:
         """
 
+        # Go through rows and place tokens on a 2D map.
+        rows = [[char for char in line] for line in map_text.split('\n') if line != '']
         row_number = 0
-        for row in self.rows:
+        for row in rows:
             character_number = 0
             for character in row:
-                self.game_map.tokens[row_number, character_number] = character
+                game_map.tokens[row_number, character_number] = character
                 character_number += 1
             row_number += 1
 
@@ -147,12 +142,12 @@ if __name__ == '__main__':
         #########################################################
         """
 
-        boxes = [box1, box2, box3]
+        maps = [box1, box2, box3]
         curses.curs_set(0)
         animation_speed = 0.00025
 
         # Build each box and present it onto the screen in an animated fashion.
-        for box in boxes:
+        for map_text in maps:
             # Build the box(converts tokens to wall pieces).
 
             game_map = Map()
@@ -165,7 +160,9 @@ if __name__ == '__main__':
                 'food': Food,
                 'water': Water
             }
-            map_builder = MapBuilder(box, game_map, map_objects=map_objects)
+            map_builder = MapBuilder()
+            map_builder.build(map_text, game_map, map_objects)
+
             for (y, x), obj in game_map.objects.items():
                 try:
                     stdscr.addch(y, x, obj.ch_number, curses.color_pair(obj.color))
