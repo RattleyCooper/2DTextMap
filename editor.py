@@ -1,6 +1,3 @@
-import curses
-from map_objects import Wall, VerticalDoor, HorizontalDoor, Floor, Treasure, Food, Water
-from time import sleep
 
 
 class Map(object):
@@ -38,18 +35,19 @@ class MapBuilder(object):
         :return:
         """
 
-        game_object_tokens = []
+        # Get a list of game_object_token
+        map_object_tokens = []
+        map_objects_list = list(self.map_objects.values())
         if self.map_objects is not None:
-            game_object_tokens = [o.token for o in self.map_objects.values()]
+            map_object_tokens = [map_object.token for map_object in self.map_objects.values()]
 
         # Go through game map tokens and place the objects into the game map.
         for (y, x), char in self.game_map.tokens.items():
-            if char in game_object_tokens:
-                game_objects = [o for o in self.map_objects.values() if o.token == char]
-                if game_objects:
-                    obj = game_objects[0](y, x)
-                    obj.place(self.game_map)
-                    continue
+            if char in map_object_tokens:
+                map_object = map_objects_list[map_object_tokens.index(char)]
+                obj = map_object(y, x)
+                obj.place(self.game_map)
+                continue
 
             self.game_map.objects[y, x] = char
             continue
@@ -71,126 +69,131 @@ class MapBuilder(object):
             row_number += 1
 
 
-def main(stdscr):
-    # Place map tokens into some strings.
-    box1 = """
-        ##############                                       ##############
-        #            #########################################            #
-        #            #                                       #            #
-        #            #######                           #######            #
-        #            #     #                           #     #            #
-        #            #     #                           #     #            #
-        ###########################             ###########################
-           #  #      #            #             #            #     #  #
-           #  #      #            #             #            #     #  #
-           #  ########            ####### #######            #######  #
-           #         #            #     # #     #            #        #
-           #         #            #     # #     #            #        #
-           #         #########################################        #
-           #               #      #             #      #              #
-           #               #      #             #      #              #
-           #               ########  r/python   ########              #
-           #                      #             #                     #
-           #                      #             #                     #
-           #                      ###############                     #
-           #                                                          #
-           ############################################################
-    """
+if __name__ == '__main__':
+    import curses
+    from map_objects import Wall, VerticalDoor, HorizontalDoor, Floor, Treasure, Food, Water
+    from time import sleep
 
-    box2 = """
-         ########
-         ########
-          #    #
-          #    #
-    ###################################################################
-    #                                                                 #
-    #                                                                 #
-    #                                                                 #
-    #                                                                 #
-    #                                                                 #
-    ###################################################################
-       #                                                           #
-       #   #########                                   #########   #
-       #   #   #   #                                   #   #   #   #
-       #   #########                                   #########   #
-       #   #   #   #                                   #   #   #   #
-       #   #########             /r/python             #########   #
-       #                                                           #
-       #   #########            ###########            #########   #
-       #   #   #   #            #         #            #   #   #   #
-       #   #########            #         #            #########   #
-       #   #   #   #            #         #            #   #   #   #
-       #   #########            #        *#            #########   #
-       #                        #         #                        #
-       #                        #         #                        #
-       #############################################################
-    """
+    def main(stdscr):
+        # Place map tokens into some strings.
+        box1 = """
+            ##############                                       ##############
+            #            #########################################            #
+            #            #                                       #            #
+            #            #######                           #######            #
+            #            #     #                           #     #            #
+            #            #     #                           #     #            #
+            ###########################             ###########################
+               #  #      #            #             #            #     #  #
+               #  #      #            #             #            #     #  #
+               #  ########            ####### #######            #######  #
+               #         #            #     # #     #            #        #
+               #         #            #     # #     #            #        #
+               #         #########################################        #
+               #               #      #             #      #              #
+               #               #      #             #      #              #
+               #               ########  r/python   ########              #
+               #                      #             #                     #
+               #                      #             #                     #
+               #                      ###############                     #
+               #                                                          #
+               ############################################################
+        """
 
-    box3 = """
-    #########################################################
-    #          #f                             #             #
-    #          #                              |             #
-    #          #                              |             #
-    #####--#####                              #             #
-    #                                         #             #
-    |                 ###########             #             #
-    |                 #wwwwwwwww#             ###############
-    |                 #wwwwwwwww#             #            $#
-    #                 #wwwwwwwww#             #             #
-    #                 ###########             #             #
-    #                                         |             #
-    #                                         |             #
-    #                                         #             #
-    #########################################################
-    """
+        box2 = """
+             ########
+             ########
+              #    #
+              #    #
+        ###################################################################
+        #                                                                 #
+        #                                                                 #
+        #                                                                 #
+        #                                                                 #
+        #                                                                 #
+        ###################################################################
+           #                                                           #
+           #   #########                                   #########   #
+           #   #   #   #                                   #   #   #   #
+           #   #########                                   #########   #
+           #   #   #   #                                   #   #   #   #
+           #   #########             /r/python             #########   #
+           #                                                           #
+           #   #########            ###########            #########   #
+           #   #   #   #            #         #            #   #   #   #
+           #   #########            #         #            #########   #
+           #   #   #   #            #         #            #   #   #   #
+           #   #########            #        *#            #########   #
+           #                        #         #                        #
+           #                        #         #                        #
+           #############################################################
+        """
 
-    boxes = [box1, box2, box3]
-    curses.curs_set(0)
-    animation_speed = 0.00025
+        box3 = """
+        #########################################################
+        #          #f                             #             #
+        #          #                              |             #
+        #          #                              |             #
+        #####--#####                              #             #
+        #                                         #             #
+        |                 ###########             #             #
+        |                 #wwwwwwwww#             ###############
+        |                 #wwwwwwwww#             #            $#
+        #                 #wwwwwwwww#             #             #
+        #                 ###########             #             #
+        #                                         |             #
+        #                                         |             #
+        #                                         #             #
+        #########################################################
+        """
 
-    # Build each box and present it onto the screen in an animated fashion.
-    for box in boxes:
-        # Build the box(converts tokens to wall pieces).
+        boxes = [box1, box2, box3]
+        curses.curs_set(0)
+        animation_speed = 0.00025
 
-        game_map = Map()
-        map_objects = {
-            'vdoor': VerticalDoor,
-            'hdoor': HorizontalDoor,
-            'wall': Wall,
-            'floor': Floor,
-            'treasure': Treasure,
-            'food': Food,
-            'water': Water
-        }
-        map_builder = MapBuilder(box, game_map, map_objects=map_objects)
-        for (y, x), obj in game_map.objects.items():
-            try:
-                stdscr.addch(y, x, obj.ch_number, curses.color_pair(obj.color))
-            except AttributeError:
-                stdscr.addstr(y, x, obj)
-            except TypeError:
-                stdscr.addstr(y, x, obj.drawing, curses.color_pair(obj.color))
-            stdscr.refresh()
-            sleep(animation_speed)
+        # Build each box and present it onto the screen in an animated fashion.
+        for box in boxes:
+            # Build the box(converts tokens to wall pieces).
 
-        sleep(5)
-        stdscr.clear()
+            game_map = Map()
+            map_objects = {
+                'vdoor': VerticalDoor,
+                'hdoor': HorizontalDoor,
+                'wall': Wall,
+                'floor': Floor,
+                'treasure': Treasure,
+                'food': Food,
+                'water': Water
+            }
+            map_builder = MapBuilder(box, game_map, map_objects=map_objects)
+            for (y, x), obj in game_map.objects.items():
+                try:
+                    stdscr.addch(y, x, obj.ch_number, curses.color_pair(obj.color))
+                except AttributeError:
+                    stdscr.addstr(y, x, obj)
+                except TypeError:
+                    stdscr.addstr(y, x, obj.drawing, curses.color_pair(obj.color))
+                stdscr.refresh()
+                sleep(animation_speed)
+
+            sleep(5)
+            stdscr.clear()
 
 
-try:
-    s = curses.initscr()
-    curses.start_color()
-    curses.use_default_colors()
-    for i in range(0, curses.COLORS):
-        curses.init_pair(i + 1, i, -1)
-    main(s)
-finally:
     try:
-        curses.nocbreak()
-    except curses.error:
-        import sys
-        sys.exit()
+        s = curses.initscr()
+        curses.start_color()
+        curses.use_default_colors()
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1, i, -1)
+        main(s)
+    finally:
+        try:
+            curses.nocbreak()
+        except curses.error:
+            import sys
+            sys.exit()
 
-    s.keypad(False)
-    curses.echo()
-    curses.endwin()
+        s.keypad(False)
+        curses.echo()
+        curses.endwin()
