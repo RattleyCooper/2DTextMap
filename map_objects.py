@@ -1,6 +1,11 @@
 
 
-class MapObject(object):
+class EmptyTile(object):
+    """
+    The EmptyTile tile is the tile that all other MapObjects inherit from.
+
+    EmptyTile->Floor->MapObject
+    """
     token = str
     drawing = ''
     color = 0
@@ -11,6 +16,56 @@ class MapObject(object):
 
     def place(self, game_map):
         game_map.objects[self.y, self.x] = self
+
+
+class Floor(EmptyTile):
+    """
+    The Floor tile is the base of the map that all other objects exist upon.
+    """
+    token = ' '
+    drawing = ' '
+    color = 0
+    ch_number = 32
+
+    def move(self, x, y, game_map, replacement=EmptyTile):
+        """
+        Moving the floor will replace the floor tile with a EmptyTile tile.
+
+        :param x:
+        :param y:
+        :param game_map:
+        :param replacement:
+        :return:
+        """
+
+        c = self.y, self.x
+        game_map.objects[c] = replacement(*c)
+        self.y, self.x = y, x
+        game_map.objects[y, x] = self
+
+
+class MapObject(Floor):
+    """
+    MapObjects are physical objects that exist on top of the Floor.  Example, the Void and EmptyTile objects
+    are not MapObjects, but Wall, Treasure and Food are.
+    """
+    token = str
+    drawing = ''
+    color = 0
+    ch_number = 0
+
+    def move(self, x, y, game_map, replacement=Floor):
+        """
+        Moving a MapObject will replace it with a Floor object.
+
+        :param x:
+        :param y:
+        :param game_map:
+        :param replacement:
+        :return:
+        """
+
+        Floor.move(self, x, y, game_map, replacement=replacement)
 
 
 class Treasure(MapObject):
@@ -25,13 +80,6 @@ class Food(MapObject):
     color = 11
     drawing = ''
     ch_number = None
-
-
-class Floor(MapObject):
-    token = ' '
-    drawing = ' '
-    color = 10
-    ch_number = 32
 
 
 class Wall(MapObject):

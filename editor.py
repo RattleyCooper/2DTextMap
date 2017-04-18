@@ -3,6 +3,17 @@
 class Map(object):
     """
     Container that holds all the objects on the game map.
+
+    Access objects on the map easily:
+
+        for (y, x), map_object in self.objects.items():
+            stdscr.addstr(y, x, map_object.display, curses.color_pair(map_object.color))
+
+        # Move an object.
+        obj = self.objects[10, 10]
+        obj.y, obj.x = 5, 5
+        self.objects[obj.y, obj.x] = obj
+        del self.objects[10, 10]
     """
     def __init__(self):
         # Container to hold coordinates.
@@ -20,12 +31,19 @@ class MapBuilder(object):
     @staticmethod
     def build(map_text, game_map, map_objects):
         """
-        Populate the game_map with the given map_objects, based on the map_text.
+        Populate the game_map with the given map_objects, based on the tokens in the map_text.
 
-        :param map_text:
-        :param game_map:
-        :param map_objects:
-        :return game_map:
+        map_text        -   Text with "tokens"(characters that correspond to specific map
+                            objects) and any other characters that should be built.
+
+        game_map        -   Map object with a `tokens` attribute and an `objects` attribute.
+
+        map_objects     -   A dictionary of map objects that have not been instantiated.
+
+        :param map_text: str
+        :param game_map: Map
+        :param map_objects: dict
+        :return game_map: Map
         """
 
         MapBuilder.place_tokens(map_text, game_map)
@@ -94,74 +112,74 @@ if __name__ == '__main__':
     def main(stdscr):
         # Place map tokens into some strings.
         box1 = """
-            ##############                                       ##############
-            #            #########################################            #
-            #            #                                       #            #
-            #            #######                           #######            #
-            #            #     #                           #     #            #
-            #            #     #                           #     #            #
-            ###########################             ###########################
-               #  #      #            #             #            #     #  #
-               #  #      #            #             #            #     #  #
-               #  ########            ####### #######            #######  #
-               #         #            #     # #     #            #        #
-               #         #            #     # #     #            #        #
-               #         #########################################        #
-               #               #      #             #      #              #
-               #               #      #             #      #              #
-               #               ########  r/python   ########              #
-               #                      #             #                     #
-               #                      #             #                     #
-               #                      ###############                     #
-               #                                                          #
-               ############################################################
+##############                                       ##############
+#            #########################################            #
+#            #                                       #            #
+#            #######                           #######            #
+#            #     #                           #     #            #
+#            #     #                           #     #            #
+###########################             ###########################
+   #  #      #            #             #            #     #  #
+   #  #      #            #             #            #     #  #
+   #  ########            ####### #######            #######  #
+   #         #            #     # #     #            #        #
+   #         #            #     # #     #            #        #
+   #         #########################################        #
+   #               #      #             #      #              #
+   #               #      #             #      #              #
+   #               ########  r/python   ########              #
+   #                      #             #                     #
+   #                      #             #                     #
+   #                      ###############                     #
+   #                                                          #
+   ############################################################
         """
 
         box2 = """
-             ########
-             ########
-              #    #
-              #    #
-        ###################################################################
-        #                                                                 #
-        #                                                                 #
-        #                                                                 #
-        #                                                                 #
-        #                                                                 #
-        ###################################################################
-           #                                                           #
-           #   #########                                   #########   #
-           #   #   #   #                                   #   #   #   #
-           #   #########                                   #########   #
-           #   #   #   #                                   #   #   #   #
-           #   #########             /r/python             #########   #
-           #                                                           #
-           #   #########            ###########            #########   #
-           #   #   #   #            #         #            #   #   #   #
-           #   #########            #         #            #########   #
-           #   #   #   #            #         #            #   #   #   #
-           #   #########            #        *#            #########   #
-           #                        #         #                        #
-           #                        #         #                        #
-           #############################################################
+     ########
+     ########
+      #    #
+      #    #
+###################################################################
+#                                                                 #
+#                                                                 #
+#                                                                 #
+#                                                                 #
+#                                                                 #
+###################################################################
+   #                                                           #
+   #   #########                                   #########   #
+   #   #   #   #                                   #   #   #   #
+   #   #########                                   #########   #
+   #   #   #   #                                   #   #   #   #
+   #   #########             /r/python             #########   #
+   #                                                           #
+   #   #########            ###########            #########   #
+   #   #   #   #            #         #            #   #   #   #
+   #   #########            #         #            #########   #
+   #   #   #   #            #         #            #   #   #   #
+   #   #########            #        *#            #########   #
+   #                        #         #                        #
+   #                        #         #                        #
+   #############################################################
         """
 
         box3 = """
-        #########################################################
-        #          #f                             #             #
-        #          #                              |             #
-        #          #                              |             #
-        #####--#####                              #             #
-        #                                         #             #
-        |                 ###########             #             #
-        |                 #wwwwwwwww#             ###############
-        |                 #wwwwwwwww#             #            $#
-        #                 #wwwwwwwww#             #             #
-        #                 ###########             #             #
-        #                                         |             #
-        #                                         |             #
-        #                                         #             #
-        #########################################################
+#########################################################
+#$         #f                             #             #
+#          #                              |             #
+#          #                              |             #
+#####--#####                              #             #
+#                                         #             #
+|                 ###########             #             #
+|                 #wwwwwwwww#             ###############
+|                 #wwwwwwwww#             #            $#
+#                 #wwwwwwwww#             #             #
+#                 ###########             #             #
+#                                         |             #
+#                                         |             #
+#                                         #             #
+#########################################################
         """
 
         maps = [box1, box2, box3]
@@ -183,9 +201,9 @@ if __name__ == '__main__':
                 'water': Water
             }
 
-            #
             MapBuilder.build(map_text, game_map, map_objects)
-
+            if isinstance(game_map.objects[1, 1], Treasure):
+                game_map.objects[1, 1].move(2, 2, game_map)
             for (y, x), obj in game_map.objects.items():
                 try:
                     stdscr.addch(y, x, obj.ch_number, curses.color_pair(obj.color))
@@ -198,7 +216,6 @@ if __name__ == '__main__':
 
             sleep(5)
             stdscr.clear()
-
 
     try:
         s = curses.initscr()
